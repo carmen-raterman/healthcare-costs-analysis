@@ -1,0 +1,48 @@
+---
+title: "Medical Charge Predictions"
+output: html_document
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Loading in the data
+```{r data-upload}
+df = read.csv('insurance.csv', header=TRUE)
+
+#inspect imported data
+head(df)
+num_cols <- unlist(lapply(df, is.numeric))  #finding all the numeric columns in df
+plot(df[,num_cols]) #plotting numeric columns against each other, specifically how charges differ with age
+```
+
+## Exploratory Analysis
+```{r correlations}
+round(cor(df[,num_cols]), 2)
+
+#corrs not super high with charges and age/bmi
+```
+
+```{r boxplots}
+smoker = as.factor(df$smoker)
+sex = as.factor(df$sex)
+region = as.factor(df$region)
+
+#creating boxplots for charges vs other categories of smoker, sex, region on x axis
+boxplot(df$charges ~ smoker, main ='Smoker') #if you are smoker, average charge is much higher
+boxplot(df$charges ~ sex, main ='sex') #avgs look pretty similar for sex, but higher quartile for males
+boxplot(df$charges ~ region, main ='region') #southeast avg looks higher, higher Q1
+
+```
+
+## Linear Regression
+```{r}
+linear_model = lm(charges ~. , data =df)
+summary(linear_model)
+
+```
+
+
